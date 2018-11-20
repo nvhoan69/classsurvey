@@ -1,0 +1,71 @@
+<div class="left_col scroll-view">
+  <div class="navbar nav_title" style="border: 0;">
+    <a href="" class="site_title"><i class="fa fa-spinner"></i> <span>Class Survey!</span></a>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <!-- menu profile quick info -->
+  <div class="profile clearfix">
+    <div class="profile_pic">
+      <img src="/static/images/img.jpg" alt="..." class="img-circle profile_img">
+    </div>
+    <div class="profile_info">
+      <span>Welcome,</span>
+      <h2> {{ current_user.username }} </h2>
+    </div>
+  </div>
+  <!-- /menu profile quick info -->
+
+  <br />
+
+  <!-- sidebar menu -->
+  <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+    <div class="menu_section">
+      <h3>General</h3>
+      <ul class="nav side-menu">
+        <li><a><i class="fa fa-home"></i>Sinh viên<span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="/admin/student/student_management">Liệt kê</a></li>
+            <li><a href="#">Tạo tài khoản</a></li>
+            <li><a href="#">Tạo tài khoản qua excel</a></li>
+          </ul>
+        </li>
+
+        <li><a><i class="fa fa-users"></i>Giảng viên<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="/admin/lecturer/lecturer_management">Liệt kê</a></li>
+            <li><a href="#">Tạo tài khoản</a></li>
+            <li><a href="#">Tạo tài khoản qua excel</a></li>
+            </ul>
+        </li>
+
+
+         <li><a><i class="fa fa-home"></i>Phiếu khảo sát<span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Dashboard2</a></li>
+            <li><a href="#">Dashboard3</a></li>
+          </ul>
+         </li>
+
+         <li><a><i class="fa fa-home"></i>Các cuộc khảo sát<span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Dashboard2</a></li>
+            <li><a href="#">Dashboard3</a></li>
+          </ul>
+        </li>
+
+        <li><a><i class="fa fa-clone"></i>Kết quả<span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="#">nothing</a></li>
+            <li><a href="#">nothing</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- /sidebar menu -->
+
+</div>
