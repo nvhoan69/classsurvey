@@ -7,10 +7,10 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  {% include 'lecturer/alert.html' %}
-  {% include 'lecturer/lecturer_delete_confirm.html' %}
-  {% include 'lecturer/lecturer_modals.html' %}
-  {% include 'lecturer/lecturer_table.html' %}
+  {% include 'alert.html' %}
+  {% include 'lecturer_delete_confirm.html' %}
+  {% include 'lecturer_modals.html' %}
+  {% include 'lecturer_table.html' %}
 
 {% endblock content %}
 
@@ -25,7 +25,7 @@
         var fields_render = {{ fields_render|tojson|safe }}
         var lecturers = JSON.parse({{ lecturers|tojson|safe }})
     </script>
-    <script src="{{ url_for('admin_blueprint.static', filename='lecturerManagement.js') }}"></script>
+    <script src="{{ url_for('lecturer_mn_blueprint.static', filename='lecturerManagement.js') }}"></script>
 
     <script>
 

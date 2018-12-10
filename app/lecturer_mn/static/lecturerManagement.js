@@ -55,7 +55,7 @@ function showModal() { // eslint-disable-line no-unused-vars
  * @param {userId} userId - Id of the user to be deleted.
  */
 function showUserModal(lecturer_id) { // eslint-disable-line no-unused-vars
-  call(`/admin/lecturer/get/${lecturer_id}`, function(properties) {
+  call(`/lecturer_mn/get/${lecturer_id}`, function(properties) {
     for (const [property, value] of Object.entries(properties)) {
       $(`#${property}`).val(value);
     }
@@ -65,7 +65,7 @@ function showUserModal(lecturer_id) { // eslint-disable-line no-unused-vars
 }
 
 function deleteUser(id) { // eslint-disable-line no-unused-vars
-    call(`/admin/lecturer/get/${id}`, function (properties) {
+    call(`/lecturer_mn/get/${id}`, function (properties) {
         var full_name = properties.full_name
         var vnu_email = properties.vnu_email
         var account = properties.account
@@ -80,7 +80,7 @@ function deleteUser(id) { // eslint-disable-line no-unused-vars
 }
 
 function doDelete(id) {
-    call(`/admin/lecturer/delete/${id}`, function (success) {
+    call(`/lecturer_mn/delete/${id}`, function (success) {
         if(success=='Success') {
             $('#alert_message').text('Xóa thành công!')
             $('#alert').modal('show');
@@ -93,7 +93,7 @@ function doDelete(id) {
 * Create or edit lecturer.
 */
 function processData() { // eslint-disable-line no-unused-vars
-  fCall('/admin/lecturer/process_lecturer', '#edit-form', function(lecturer) {
+  fCall('/lecturer_mn/process', '#edit-form', function(lecturer) {
     const title = $('#title').text().startsWith('Ch');
     const mode = title ? 'edit' : 'create';
     addUser(mode, lecturer);

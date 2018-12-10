@@ -1,7 +1,7 @@
 import json
 
-from app.ad_lecturer import blueprint
-from flask import render_template, request, jsonify, redirect, url_for
+from app.lecturer_mn import blueprint
+from flask import render_template, request, jsonify
 from flask_login import login_required
 
 from app.base.helpers import requires_access_level, lecturer_factory
@@ -10,10 +10,10 @@ from app.base.forms import AddLecturer
 
 from app import db
 
-@blueprint.route('/lecturer/lecturer_management')
+@blueprint.route('/index')
 @login_required
 @requires_access_level('admin')
-def lecturers_list():
+def lecturer_index():
     fields = [
         'account',
         'full_name',
@@ -31,14 +31,14 @@ def lecturers_list():
     lecturer_json = json.dumps(output)
 
     return render_template(
-        '/lecturer/lecturer_management.html',
+        '/lecturer_management.html',
         fields=fields,
         fields_render=fields_render,
         lecturers=lecturer_json,
         form=AddLecturer(request.form)
     )
 
-@blueprint.route('/lecturer/get/<id>', methods=['POST'])
+@blueprint.route('/get/<id>', methods=['POST'])
 @login_required
 @requires_access_level('admin')
 def get_lecturer(id):
@@ -50,7 +50,7 @@ def get_lecturer(id):
 
     return jsonify(output)
 
-@blueprint.route('/lecturer/process_lecturer', methods=['POST'])
+@blueprint.route('/process', methods=['POST'])
 @login_required
 @requires_access_level('admin')
 def process_lecturer():
@@ -61,13 +61,13 @@ def process_lecturer():
 
     return jsonify(output)
 
-@blueprint.route('/lecturer/delete/<id>', methods=['POST'])
+@blueprint.route('/delete/<id>', methods=['POST'])
 @login_required
 @requires_access_level('admin')
 def delete_lecturer(id):
     lecturer = Lecturer.query.filter_by(lecturer_id=id).first()
     if not lecturer:
         return render_template('errors/page_404.html')
-    lecturer.account = str(lecturer.account) + '-Deleted';  # not test yet, consider to use active instead of delete directly
+    lecturer.account = str(lecturer.account) + '-Deleted'  # not test yet, consider to add "-Deleted" to the account instead of delete directly
     db.session.commit()
     return jsonify('Success')

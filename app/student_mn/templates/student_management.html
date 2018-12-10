@@ -7,10 +7,10 @@
 {% endblock stylesheets %}
 
 {% block content %}
-    {% include 'student/alert.html' %}
-    {% include 'student/student_delete_confirm.html' %}
-    {% include 'student/student_modals.html' %}
-    {% include 'student/student_table.html' %}
+    {% include 'alert.html' %}
+    {% include 'student_delete_confirm.html' %}
+    {% include 'student_modals.html' %}
+    {% include 'student_table.html' %}
 
 {% endblock content %}
 
@@ -28,7 +28,7 @@
 
     </script>
 
-    <script src="{{ url_for('admin_blueprint.static', filename='studentManagementt.js') }}"></script>
+    <script src="{{ url_for('student_mn_blueprint.static', filename='studentManagement.js') }}"></script>
     <script>
 
     </script>
