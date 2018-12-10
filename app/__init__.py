@@ -3,13 +3,16 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from importlib import import_module
+from flask_marshmallow import  Marshmallow
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+ma = Marshmallow()
 
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
+    ma.init_app(app)
 
 def register_blueprints(app):
     for module_name in ('base', 'admin', 'student', 'lecturer'):
@@ -29,7 +32,7 @@ def configure_database(app):
 def create_app():
     app = Flask(__name__, static_folder='base/static', template_folder='base/templates')
     app.config['SECRET_KEY'] = 'key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://classsurvey:123@localhost:3306/mydb'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://classsurvey:123@localhost:3306/ourdb'
 
     register_extensions(app)
     register_blueprints(app)

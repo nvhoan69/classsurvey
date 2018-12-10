@@ -1326,7 +1326,10 @@ table.jambo_table tbody tr.selected td {
     position: relative;
     clear: both;
     zoom: 1
+
 }
+tr { height: 50px; }
+
 .dataTables_processing {
     position: absolute;
     top: 50%;
@@ -4253,3 +4256,9 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
     background-color: #ffff !important;
 }
 /** /bootstrap-datetimepicker **/
+
+
+/** mystuff **/
+.dataTables tbody tr {
+min-height: 35px;
+}

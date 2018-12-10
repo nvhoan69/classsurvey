@@ -11,7 +11,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
       {% endblock meta %}
 
-      <title>Class Survey! | {% block title %}{% endblock %}</title>
+      <title>Class survey | {% block title %}{% endblock %}</title>
 
       {% block stylesheets %}
         <!-- Bootstrap -->
@@ -39,6 +39,12 @@
       <div class="container body">
         <div class="main_container">
 
+          {% block sidebar %}
+            <div class="col-md-3 left_col {% block sidebar_class %} {% endblock sidebar_class %}">
+              {% include "site_template/sidebar.html" %}
+            </div>
+          {% endblock sidebar %}
+
           {% block top_navigation %}
             <div class="top_nav">
               {% include "site_template/top_navigation.html" %}
@@ -48,7 +54,6 @@
           {% block content %}
             <!-- {{ content }} -->
           {% endblock content %}
-
         </div>
       </div>
 
@@ -91,7 +96,7 @@
 
       {% endblock %}
       <!-- Custom Theme Scripts -->
-      <script src="{{ url_for('static', filename='build/js/custom.js') }}"></script>
+      <script src="{{ url_for('static', filename='build/js/custom1.js') }}"></script>
     {% endblock body %}
   </body>
 </html>

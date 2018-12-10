@@ -4,3 +4,5 @@ flask_migrate
 bcrypt
 flask_wtf
 mysql-connector-python
+flask-marshmallow
+marshmallow-sqlalchemy
