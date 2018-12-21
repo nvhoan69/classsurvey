@@ -9,14 +9,14 @@ class LoginForm(FlaskForm):
     password = PasswordField('Mật khẩu', id='pwd_login')
 
 class AddStudent(FlaskForm):
-    student_id = HiddenField()
+    id = HiddenField()
     student_code = TextField('MSV/Tài khoản')
     full_name = TextField('Họ và tên')
     vnu_email = TextField('VNU email')
-    khoa = TextField('Khóa đào tạo')
+    class_course = TextField('Khóa đào tạo')
 
 class AddLecturer(FlaskForm):
-    lecturer_id = HiddenField()
-    account = TextField('Tài khoản')
+    id = HiddenField()
+    username = TextField('Tài khoản')
     full_name = TextField('Họ và tên')
     vnu_email = TextField('VNU email')

@@ -6,15 +6,13 @@ from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import login_required
 
 from app.base.helpers import requires_access_level, lecturer_factory
-from app.base.models import Lecturer, LecturerSchema
+from app.base.models import Lecturer, LecturerSchema, db_session
 from app.base.forms import AddLecturer
-
-from app import db
 
 from app.lecturer_mn.helpers import excel_list_to_dict
 
 fields = [
-        'account',
+        'username',
         'full_name',
         'vnu_email'
     ]
@@ -45,7 +43,7 @@ def lecturer_index():
 @login_required
 @requires_access_level('admin')
 def get_lecturer(id):
-    lecturer = Lecturer.query.filter_by(lecturer_id=id).first()
+    lecturer = Lecturer.query.filter_by(id=id).first()
     if not lecturer:
         return render_template('errors/page_404.html')
     lecturer_schema = LecturerSchema()
@@ -68,12 +66,15 @@ def process_lecturer():
 @login_required
 @requires_access_level('admin')
 def delete_lecturer(id):
-    lecturer = Lecturer.query.filter_by(lecturer_id=id).first()
+    lecturer = Lecturer.query.filter_by(id=id).first()
     if not lecturer:
         return render_template('errors/page_404.html')
     # lecturer.account = str(lecturer.account) + '-Deleted'  # not test yet, consider to add "-Deleted" to the account instead of delete directly
-    db.session.delete(lecturer)
-    db.session.commit()
+    user = lecturer.user
+
+    db_session.delete(user)
+    db_session.delete(lecturer)
+    db_session.commit()
     return jsonify('Success')
 
 @blueprint.route('/excel_upload', methods=['POST', 'GET'])

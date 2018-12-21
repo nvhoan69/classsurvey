@@ -9,7 +9,7 @@ from app.base.helpers import requires_access_level, student_factory
 from app.base.models import Student, StudentSchema
 from app.base.forms import AddStudent
 
-from app import db
+from app.base.models import db_session
 
 from app.student_mn.helpers import excel_list_to_dict
 
@@ -21,7 +21,7 @@ def student_index():
         'student_code',
         'full_name',
         'vnu_email',
-        'khoa'
+        'class_course'
     ]
     fields_render = [
         'MSV/Tài khoản',
@@ -43,11 +43,11 @@ def student_index():
         form=AddStudent(request.form)
     )
 
-@blueprint.route('/get/<student_id>', methods=['POST'])
+@blueprint.route('/get/<id>', methods=['POST'])
 @login_required
 @requires_access_level('admin')
-def student_get(student_id):
-    student = Student.query.filter_by(student_id=student_id).first()
+def student_get(id):
+    student = Student.query.filter_by(id=id).first()
     if not student:
         return render_template('errors/page_404.html')
     student_schema = StudentSchema()
@@ -71,12 +71,15 @@ def student_process():
 @login_required
 @requires_access_level('admin')
 def student_delete(id):
-    student = Student.query.filter_by(student_id=id).first()
+    student = Student.query.filter_by(id=id).first()
     if not student:
         return render_template('errors/page_404.html')
+    user = student.user
     # student.student_code = str(student.student_code) + '-Deleted' # not test yet, consider to add "-Deleted" to the account instead of delete directly
-    db.session.delete(student)
-    db.session.commit()
+    db_session.delete(user)
+    db_session.delete(student)
+
+    db_session.commit()
     return jsonify('Success')
 
 @blueprint.route('/excel_upload', methods=['POST', 'GET'])

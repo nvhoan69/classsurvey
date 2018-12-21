@@ -23,7 +23,7 @@
     <script>
         var fields = {{ fields|tojson|safe }}
         var fields_render = {{ fields_render|tojson|safe }}
-        var lecturers = JSON.parse({{ lecturers|tojson|safe }})
+        var users = JSON.parse({{ lecturers|tojson|safe }})
     </script>
     <script src="{{ url_for('lecturer_mn_blueprint.static', filename='lecturerManagement.js') }}"></script>
 

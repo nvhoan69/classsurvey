@@ -1,6 +1,6 @@
 fields = [
         'stt',
-        'account',
+        'username',
         'password',
         'full_name',
         'vnu_email'

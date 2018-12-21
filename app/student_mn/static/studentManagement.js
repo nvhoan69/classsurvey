@@ -22,21 +22,21 @@ function addUser(mode, properties) {
   }
   values.push(
     `<button type="button" class="btn btn-info btn-xs"
-    onclick="showUserModal('${properties.student_id}')">Sửa</button>`,
+    onclick="showUserModal('${properties.id}')">Sửa</button>`,
     `<button type="button" class="btn btn-danger btn-xs"
-    onclick="deleteUser('${properties.student_id}')">Xóa</button>`
+    onclick="deleteUser('${properties.id}')">Xóa</button>`
   );
   if (mode == 'edit') {
-    table.row($(`#${properties.student_id}`)).data(values);
+    table.row($(`#${properties.id}`)).data(values);
   } else {
     const rowNode = table.row.add(values).draw(false).node();
-    $(rowNode).attr('id', `${properties.student_id}`);
+    $(rowNode).attr('id', `${properties.id}`);
   }
 }
 
 (function() {
-  for (let i = 0; i < students.length; i++) {
-    addUser('create', students[i]);
+  for (let i = 0; i < users.length; i++) {
+    addUser('create', users[i]);
   }
 })();
 
@@ -54,8 +54,8 @@ function showModal() { // eslint-disable-line no-unused-vars
  * Display user modal for editing.
  * @param {userId} userId - Id of the user to be deleted.
  */
-function showUserModal(student_id) { // eslint-disable-line no-unused-vars
-  call(`/student_mn/get/${student_id}`, function(properties) {
+function showUserModal(id) { // eslint-disable-line no-unused-vars
+  call(`/student_mn/get/${id}`, function(properties) {
     for (const [property, value] of Object.entries(properties)) {
       $(`#${property}`).val(value);
     }
@@ -64,31 +64,31 @@ function showUserModal(student_id) { // eslint-disable-line no-unused-vars
   });
 }
 
-function deleteUser(student_id) { // eslint-disable-line no-unused-vars
-    call(`/student_mn/get/${student_id}`, function (properties) {
+function deleteUser(id) { // eslint-disable-line no-unused-vars
+    call(`/student_mn/get/${id}`, function (properties) {
         var full_name = properties.full_name
         var vnu_email = properties.vnu_email
         var student_code = properties.student_code
-        var khoa = properties.khoa
+        var class_course = properties.class_course
         $('#cf_full_name').text('Họ tên: ' + full_name)
         $('#cf_student_code').text('Mã sinh viên: ' + student_code)
         $('#cf_vnu_email').text('VNU email: ' + vnu_email)
-        $('#cf_khoa').text('Khóa đào tạo: ' + khoa)
+        $('#cf_class_course').text('Khóa đào tạo: ' + class_course)
     })
     $('#delete_confirm').modal('show');
     $('#doDelete').click(function () {
-        doDelete(student_id);
+        doDelete(id);
     })
 }
 
-function doDelete(student_id) {
-    call(`/student_mn/delete/${student_id}`, function (success) {
+function doDelete(id) {
+    call(`/student_mn/delete/${id}`, function (success) {
         if(success=='Success') {
             $('#alert_message').text('Xóa thành công!')
             $('#alert').modal('show');
         }
     })
-    $(`#${student_id}`).remove();
+    $(`#${id}`).remove();
     $('#delete_confirm').modal('hide');
 }
 

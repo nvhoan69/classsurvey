@@ -4,7 +4,7 @@ fields = [
         'password',
         'full_name',
         'vnu_email',
-        'khoa'
+        'class_course'
     ]
 
 fields_len = 6

@@ -1,27 +1,42 @@
 from bcrypt import gensalt, hashpw
 from flask_login import UserMixin
 
-from app import db, login_manager, ma
+from sqlalchemy import Column, Date, Float, ForeignKey, Index, LargeBinary, String, TIMESTAMP, Table, Text, text, \
+    create_engine
+from sqlalchemy.dialects.mysql import INTEGER, LONGTEXT, MEDIUMTEXT, TINYINT
+from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
+from sqlalchemy.ext.declarative import declarative_base
 
+from app import login_manager, ma
 
+engine = create_engine('mysql+mysqlconnector://classsurvey:123@localhost:3306/ourdb', convert_unicode=True)
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                     autoflush=False,
+                                     bind=engine))
+Base = declarative_base()
+Base.query = db_session.query_property()
+metadata = Base.metadata
 
-ACCESS = {
-    'admin': 0,
-    'lecturer':1,
-    'student':2
-}
+class Role(Base):
+    __tablename__ = 'role'
 
+    id = Column(INTEGER(11), primary_key=True)
+    code = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
 
-class User(db.Model, UserMixin):
+class User(Base, UserMixin):
 
     __tablename__ = 'user'
+    id = Column(INTEGER(11), primary_key=True)
+    username = Column(String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    password = Column(String(255, 'utf8mb4_unicode_ci'), nullable=False)
+    role_id = Column(INTEGER(11), ForeignKey('role.id'))
 
-    user_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-    password = db.Column(db.String(255, 'utf8mb4_unicode_ci'), nullable=False)
-    role = db.Column(db.Integer, nullable=False)
+    role = relationship("Role")
 
-    def __init__(self, **kwargs):
+    def update(self, password, **kwargs):
+        value = hashpw(password.encode('utf8'), gensalt())
+        setattr(self, 'password', value)
         for property, value in kwargs.items():
             # depending on whether value is an iterable or not, we must
             # unpack it's value (when **kwargs is request.form, some values
@@ -29,22 +44,25 @@ class User(db.Model, UserMixin):
             if hasattr(value, '__iter__') and not isinstance(value, str):
                 # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
                 value = value[0]
-            if property == 'password':
-                value = hashpw(value.encode('utf8'), gensalt())
-            setattr(self, property, value)
+
+            if property in ('username'):
+                setattr(self, property, value)
+
+    def __init__(self, password,**kwargs):
+        self.update(password, **kwargs)
 
     def __repr__(self):
         return str(self.username)
 
     def get_id(self):
-        return self.user_id
+        return self.id
 
     def allowed(self, access_level):
-        return self.role == ACCESS[access_level]
+        return access_level == self.role.code
 
 @login_manager.user_loader
 def user_loader(id):
-    return User.query.filter_by(user_id=id).first()
+    return User.query.filter_by(id=id).first()
 
 
 @login_manager.request_loader
@@ -53,41 +71,64 @@ def request_loader(request):
     user = User.query.filter_by(username=username).first()
     return user if user else None
 
-class Student(db.Model):
 
+
+class Student(Base):
     __tablename__ = 'student'
 
-    student_id = db.Column(db.Integer, primary_key=True)
-    student_code = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-    full_name = db.Column(db.String(100, 'utf8mb4_unicode_ci'), nullable=False)
-    vnu_email = db.Column(db.String(255, 'utf8mb4_unicode_ci'), nullable=False)
-    khoa = db.Column(db.String(20, 'utf8mb4_unicode_ci'), nullable=False)
+    id = Column(INTEGER(11), primary_key=True)
+    student_code = Column(String(45, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    # dob = Column(Date)
+    full_name = Column(String(255, 'utf8mb4_unicode_ci'))
+    vnu_email = Column(String(64, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    class_course = Column(String(45, 'utf8mb4_unicode_ci'))
+    user_id = Column(ForeignKey('user.id'), nullable=False, unique=True)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user = relationship('User', backref=backref("user_student"))
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
 
     def update(self, **kwargs):
         for property, value in kwargs.items():
-            if property in ['student_code', 'full_name', 'vnu_email', 'khoa']:
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('student_code', 'full_name', 'vnu_email', 'class_course'):
                 setattr(self, property, value)
+
 
 class StudentSchema(ma.ModelSchema):
     class Meta:
         model = Student
 
-class Lecturer(db.Model):
 
+class Lecturer(Base):
     __tablename__ = 'lecturer'
 
-    lecturer_id = db.Column(db.Integer, primary_key=True)
-    account = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-    full_name = db.Column(db.String(100, 'utf8mb4_unicode_ci'), nullable=False)
-    vnu_email = db.Column(db.String(255, 'utf8mb4_unicode_ci'), nullable=False)
+    id = Column(INTEGER(11), primary_key=True)
+    username = Column(String(45, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    full_name = Column(String(255, 'utf8mb4_unicode_ci'))
+    vnu_email = Column(String(64, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    user_id = Column(ForeignKey('user.id'), nullable=False, unique=True)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user = relationship('User', backref=backref("user_lecture", uselist=False))
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
 
     def update(self, **kwargs):
         for property, value in kwargs.items():
-            if property in ['account', 'full_name', 'vnu_email']:
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('username', 'full_name', 'vnu_email'):
                 setattr(self, property, value)
 
 class LecturerSchema(ma.ModelSchema):
@@ -95,20 +136,17 @@ class LecturerSchema(ma.ModelSchema):
         model = Lecturer
 
 
-student_course_t = db.Table('student_course',
-    db.Column('student_id', db.Integer, db.ForeignKey('student.student_id')),
-    db.Column('course_id', db.Integer, db.ForeignKey('course.course_id'))
-)
 
 
+# class Course(db.Model):
+#
+#     __tablename__ = 'course'
+#
+#     course_id = db.Column(db.Integer, primary_key=True)
+#     course_code = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+#     name = db.Column(db.String(255, 'utf8mb4_unicode_ci'), nullable=False)
+#
+#     lecturer_id = db.Column(db.Integer, db.ForeignKey('lecturer.lecturer_id'), nullable=False)
+#     students = db.relationship("Student", secondary=student_course_t)
 
-class Course(db.Model):
-
-    __tablename__ = 'course'
-
-    course_id = db.Column(db.Integer, primary_key=True)
-    course_code = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-    name = db.Column(db.String(255, 'utf8mb4_unicode_ci'), nullable=False)
-
-    lecturer_id = db.Column(db.Integer, db.ForeignKey('lecturer.lecturer_id'), nullable=False)
-    students = db.relationship("Student", secondary=student_course_t)
+metadata.create_all(engine)

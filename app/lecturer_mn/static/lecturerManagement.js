@@ -22,21 +22,21 @@ function addUser(mode, properties) {
   }
   values.push(
     `<button type="button" class="btn btn-info btn-xs"
-    onclick="showUserModal('${properties.lecturer_id}')">Sửa</button>`,
+    onclick="showUserModal('${properties.id}')">Sửa</button>`,
     `<button type="button" class="btn btn-danger btn-xs"
-    onclick="deleteUser('${properties.lecturer_id}')">Xóa</button>`
+    onclick="deleteUser('${properties.id}')">Xóa</button>`
   );
   if (mode == 'edit') {
-    table.row($(`#${properties.lecturer_id}`)).data(values);
+    table.row($(`#${properties.id}`)).data(values);
   } else {
     const rowNode = table.row.add(values).draw(false).node();
-    $(rowNode).attr('id', `${properties.lecturer_id}`);
+    $(rowNode).attr('id', `${properties.id}`);
   }
 }
 
 (function() {
-  for (let i = 0; i < lecturers.length; i++) {
-    addUser('create', lecturers[i]);
+  for (let i = 0; i < users.length; i++) {
+    addUser('create', users[i]);
   }
 })();
 
@@ -45,7 +45,7 @@ function addUser(mode, properties) {
  */
 function showModal() { // eslint-disable-line no-unused-vars
   $('#edit-form').trigger('reset');
-  $('#lecturer_id').val('')
+  $('#id').val('')
   $('#title').text('Thêm mới giảng viên');
   $('#edit').modal('show');
 }
@@ -54,8 +54,8 @@ function showModal() { // eslint-disable-line no-unused-vars
  * Display user modal for editing.
  * @param {userId} userId - Id of the user to be deleted.
  */
-function showUserModal(lecturer_id) { // eslint-disable-line no-unused-vars
-  call(`/lecturer_mn/get/${lecturer_id}`, function(properties) {
+function showUserModal(id) { // eslint-disable-line no-unused-vars
+  call(`/lecturer_mn/get/${id}`, function(properties) {
     for (const [property, value] of Object.entries(properties)) {
       $(`#${property}`).val(value);
     }
@@ -68,7 +68,7 @@ function deleteUser(id) { // eslint-disable-line no-unused-vars
     call(`/lecturer_mn/get/${id}`, function (properties) {
         var full_name = properties.full_name
         var vnu_email = properties.vnu_email
-        var account = properties.account
+        var account = properties.username
         $('#cf_full_name').text('Họ tên: ' + full_name)
         $('#cf_account').text('Tên tài khoản: ' + account)
         $('#cf_vnu_email').text('VNU email: ' + vnu_email)
