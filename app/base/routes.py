@@ -9,7 +9,7 @@ from flask_login import (
 
 from app.base import blueprint
 from app.base.forms import LoginForm
-from app.base.models import User, Student, Role#, Course, Lecturer
+from app.base.models import User, Student, Role, Course, Lecturer
 from app.base.models import db_session
 
 
@@ -37,11 +37,16 @@ def route_default():
         db_session.add(user)
         db_session.commit()
 
-    # if not Course.query.filter_by(course_id=1).first():
-    #     course = Course(course_code='INT0609 7', name='Khóa đào tạo Siêu Nhân', lecturer_id=1)
-    #     course.students.append(Student.query.filter_by(student_code='16020971').first())
-    #     db.session.add(course)
-    #     db.session.commit()
+    # for test
+    if not Course.query.filter_by(course_code='INT3306 1').first():
+        course = Course(course_code='INT3306 1', name='Phát triển ứng dụng Web')
+
+        lecturer = Lecturer.query.filter_by(username='thanhld').first()
+        course.lecturer = lecturer
+        course.students.append(Student.query.first())
+
+        db_session.add(course)
+        db_session.commit()
 
     return redirect(url_for('base_blueprint.login'))
 
@@ -89,6 +94,4 @@ def logout():
     logout_user()
     session.clear()
     return redirect(url_for('base_blueprint.login'))
-
-
 

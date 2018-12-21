@@ -39,6 +39,15 @@ def lecturer_index():
         form=AddLecturer(request.form)
     )
 
+@blueprint.route('/test')
+@login_required
+@requires_access_level('admin')
+def test():
+    lecturers = Lecturer.query.filter_by(username='thanhld').first()
+    course = lecturers.lecturer_course[0].course_code
+
+    return course
+
 @blueprint.route('/get/<id>', methods=['POST'])
 @login_required
 @requires_access_level('admin')

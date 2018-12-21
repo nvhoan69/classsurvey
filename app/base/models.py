@@ -115,7 +115,7 @@ class Lecturer(Base):
     vnu_email = Column(String(64, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
     user_id = Column(ForeignKey('user.id'), nullable=False, unique=True)
 
-    user = relationship('User', backref=backref("user_lecture", uselist=False))
+    user = relationship('User', backref=backref("user_lecturer", uselist=False))
 
     def __init__(self, **kwargs):
         self.update(**kwargs)
@@ -136,17 +136,21 @@ class LecturerSchema(ma.ModelSchema):
         model = Lecturer
 
 
+t_course_student = Table('course_student', Base.metadata,
+    Column('course_id', INTEGER, ForeignKey('course.id')),
+    Column('student_id', INTEGER, ForeignKey('student.id'))
+)
 
+class Course(Base):
 
-# class Course(db.Model):
-#
-#     __tablename__ = 'course'
-#
-#     course_id = db.Column(db.Integer, primary_key=True)
-#     course_code = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-#     name = db.Column(db.String(255, 'utf8mb4_unicode_ci'), nullable=False)
-#
-#     lecturer_id = db.Column(db.Integer, db.ForeignKey('lecturer.lecturer_id'), nullable=False)
-#     students = db.relationship("Student", secondary=student_course_t)
+    __tablename__ = 'course'
+
+    id = Column(INTEGER(11), primary_key=True)
+    course_code = Column(String(45, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    name = Column(String(255, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+
+    lecturer_id = Column(INTEGER(11), ForeignKey('lecturer.id'), nullable=False)
+    lecturer = relationship("Lecturer", backref=backref("lecturer_courses"))
+    students = relationship("Student", secondary=t_course_student, backref=backref("student_courses"))
 
 metadata.create_all(engine)
