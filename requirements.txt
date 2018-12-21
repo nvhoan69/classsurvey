@@ -6,3 +6,5 @@ flask_wtf
 mysql-connector-python
 flask-marshmallow
 marshmallow-sqlalchemy
+pandas
+xlrd

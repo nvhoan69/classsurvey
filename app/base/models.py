@@ -112,4 +112,3 @@ class Course(db.Model):
 
     lecturer_id = db.Column(db.Integer, db.ForeignKey('lecturer.lecturer_id'), nullable=False)
     students = db.relationship("Student", secondary=student_course_t)
-

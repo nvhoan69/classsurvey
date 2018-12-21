@@ -1,7 +1,8 @@
 import json
+import pandas as pd
 
 from app.student_mn import blueprint
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import login_required
 
 from app.base.helpers import requires_access_level, student_factory
@@ -9,6 +10,8 @@ from app.base.models import Student, StudentSchema
 from app.base.forms import AddStudent
 
 from app import db
+
+from app.student_mn.helpers import excel_list_to_dict
 
 @blueprint.route('/index')
 @login_required
@@ -71,6 +74,24 @@ def student_delete(id):
     student = Student.query.filter_by(student_id=id).first()
     if not student:
         return render_template('errors/page_404.html')
-    student.student_code = str(student.student_code) + '-Deleted' # not test yet, consider to add "-Deleted" to the account instead of delete directly
+    # student.student_code = str(student.student_code) + '-Deleted' # not test yet, consider to add "-Deleted" to the account instead of delete directly
+    db.session.delete(student)
     db.session.commit()
     return jsonify('Success')
+
+@blueprint.route('/excel_upload', methods=['POST', 'GET'])
+@login_required
+@requires_access_level('admin')
+def lecturer_excel_upload():
+    if request.method == 'POST':
+        print(request.files['file'])
+        f = request.files['file']
+        data_xls = pd.read_excel(f)#read excel file
+        # STT ,code, password, full_name, vnu_email, khoa
+
+        dicts_list = excel_list_to_dict(data_xls.values.tolist())# list of student_dict
+        for data in dicts_list:# create student in database
+            student_factory(**data)
+
+        return redirect(url_for('student_mn_blueprint.student_index'))
+    return render_template('upload.html')
