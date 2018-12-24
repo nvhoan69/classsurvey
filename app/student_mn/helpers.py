@@ -28,6 +28,8 @@ def excel_list_to_dict(excel_list):
                 try:
                     check = int(property[j])
                     if str(property[j]).isdigit():
+                        if int(property[j]) > 1000:# if property[j] is student_code
+                            property[j] = str(property[j])
                         dict[fields[j]] = property[j] #if property[j] is a integer
                     else:
                         dict[fields[j]] = property[j].strip() #for the student_code

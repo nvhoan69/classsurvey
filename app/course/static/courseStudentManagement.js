@@ -18,7 +18,7 @@ const table = $('#table').DataTable({
  * @param {mode} mode - Create or edit.
  * @param {properties} properties - Properties of the user.
  */
-function addUser(mode, properties) {
+function addUser(mode, properties, course_id) {
 
   let values = [];
   for (let i = 0; i < fields.length; i++) {
@@ -28,7 +28,7 @@ function addUser(mode, properties) {
     `<button type="button" class="btn btn-info btn-xs"
     onclick="showUserModal('${properties.id}')">Sửa</button>`,
     `<button type="button" class="btn btn-danger btn-xs"
-    onclick="deleteUser('${properties.id}')">Xóa</button>`
+    onclick="deleteUser('${properties.id}', '${course_id}')">Xóa</button>`
   );
   if (mode == 'edit') {
     table.row($(`#${properties.id}`)).data(values);
@@ -40,8 +40,11 @@ function addUser(mode, properties) {
 
 (function() {
   for (let i = 0; i < users.length; i++) {
-    addUser('create', users[i]);
+    addUser('create', users[i], course_id);
   }
+  $('#info_course_code').text(course.course_code)
+  $('#info_course_name').text(course.name)
+  $('#info_lecturer').text(course.lecturer.full_name)
 })();
 
 /**
@@ -49,8 +52,8 @@ function addUser(mode, properties) {
  */
 function showModal() { // eslint-disable-line no-unused-vars
   $('#edit-form').trigger('reset');
-  $('#id').val('')
-  $('#title').text('Thêm mới giảng viên');
+  $('#student_id').val('')
+  $('#title').text('Thêm mới sinh viên');
   $('#edit').modal('show');
 }
 
@@ -59,50 +62,54 @@ function showModal() { // eslint-disable-line no-unused-vars
  * @param {userId} userId - Id of the user to be deleted.
  */
 function showUserModal(id) { // eslint-disable-line no-unused-vars
-  call(`/lecturer_mn/get/${id}`, function(properties) {
+  call(`/student_mn/get/${id}`, function(properties) {
     for (const [property, value] of Object.entries(properties)) {
       $(`#${property}`).val(value);
     }
-    $('#title').text(`Chỉnh sửa giảng viên ${properties.full_name}`);
+    $('#title').text(`Chỉnh sửa sinh viên ${properties.full_name}`);
     $('#edit').modal('show');
   });
 }
 
-function deleteUser(id) { // eslint-disable-line no-unused-vars
-    call(`/lecturer_mn/get/${id}`, function (properties) {
+function deleteUser(student_id, course_id) { // eslint-disable-line no-unused-vars
+    call(`/student_mn/get/${student_id}`, function (properties) {
         var full_name = properties.full_name
         var vnu_email = properties.vnu_email
-        var username = properties.username
+        var student_code = properties.student_code
+        var class_course = properties.class_course
         $('#cf_full_name').text('Họ tên: ' + full_name)
-        $('#cf_username').text('Tên tài khoản: ' + username)
+        $('#cf_student_code').text('Mã sinh viên: ' + student_code)
         $('#cf_vnu_email').text('VNU email: ' + vnu_email)
+        $('#cf_class_course').text('Khóa đào tạo: ' + class_course)
     })
+
     $('#delete_confirm').modal('show');
     $('#doDelete').unbind("click");
     $('#doDelete').click(function () {
-        doDelete(id);
+        doDelete(course_id, student_id);
     })
 }
 
-function doDelete(id) {
-    call(`/lecturer_mn/delete/${id}`, function (success) {
+function doDelete(course_id, student_id) {
+    call(`/course/student/delete/${course_id}/${student_id}`, function (success) {
         if(success=='Success') {
             $('#alert_message').text('Xóa thành công!')
             $('#alert').modal('show');
         }
     })
-    $(`#${id}`).remove();
+    $(`#${student_id}`).remove();
     $('#delete_confirm').modal('hide');
 }
+
 /**
-* Create or edit lecturer.
+* Create or edit user.
 */
 function processData() { // eslint-disable-line no-unused-vars
-  fCall('/lecturer_mn/process', '#edit-form', function(lecturer) {
+  fCall(`/course/student/process/${course_id}`, '#edit-form', function(student) {
     const title = $('#title').text().startsWith('Ch');
     const mode = title ? 'edit' : 'create';
-    addUser(mode, lecturer);
-    const message = `${mode == 'edit' ? 'Đã sửa' : 'Đã tạo'} giảng viên ${lecturer.full_name}. Tên tài khoản: ${lecturer.username}`;
+    addUser(mode, student);
+    const message = `${mode == 'edit' ? 'Đã sửa' : 'Đã thêm'} sinh viên ${student.full_name}. Mã sinh viên: ${student.student_code}`;
     $('#alert_message').text(message);
     $('#alert').modal('show');
     $('#edit').modal('hide');

@@ -1,6 +1,6 @@
 {% extends "admin_base_site.html" %}
 
-{% block title %} Quản lý giảng viên {% endblock title %}
+{% block title %} Quản lý các cuộc khảo sát {% endblock title %}
 
 {% block stylesheets %}
   {{ super() }}
@@ -8,9 +8,10 @@
 
 {% block content %}
   {% include 'alert.html' %}
-  {% include 'lecturer_delete_confirm.html' %}
-  {% include 'lecturer_modals.html' %}
-  {% include 'lecturer_table.html' %}
+  {% include 'course_delete_confirm.html' %}
+  {% include 'course_table.html' %}
+  {% include 'course_modals.html' %}
+
 
 {% endblock content %}
 
@@ -23,9 +24,9 @@
     <script>
         var fields = {{ fields|tojson|safe }}
         var fields_render = {{ fields_render|tojson|safe }}
-        var users = JSON.parse({{ lecturers|tojson|safe }})
+        var users = JSON.parse({{ propertis|tojson|safe }})
     </script>
-    <script src="{{ url_for('lecturer_mn_blueprint.static', filename='lecturerManagement.js') }}"></script>
+    <script src="{{ url_for('course_blueprint.static', filename='courseManagement.js') }}"></script>
 
     <script>
     </script>

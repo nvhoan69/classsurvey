@@ -1,11 +1,13 @@
 from bcrypt import gensalt, hashpw
 from flask_login import UserMixin
+from marshmallow import fields
 
-from sqlalchemy import Column, Date, Float, ForeignKey, Index, LargeBinary, String, TIMESTAMP, Table, Text, text, \
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, LargeBinary, String, TIMESTAMP, Table, Text, text, \
     create_engine
 from sqlalchemy.dialects.mysql import INTEGER, LONGTEXT, MEDIUMTEXT, TINYINT
 from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
 
 from app import login_manager, ma
 
@@ -104,7 +106,7 @@ class Student(Base):
 class StudentSchema(ma.ModelSchema):
     class Meta:
         model = Student
-
+        fields = ('id', 'student_code', 'full_name', 'vnu_email', 'class_course')
 
 class Lecturer(Base):
     __tablename__ = 'lecturer'
@@ -134,6 +136,7 @@ class Lecturer(Base):
 class LecturerSchema(ma.ModelSchema):
     class Meta:
         model = Lecturer
+        fields = ('id', 'username', 'full_name', 'vnu_email')
 
 
 t_course_student = Table('course_student', Base.metadata,
@@ -147,10 +150,71 @@ class Course(Base):
 
     id = Column(INTEGER(11), primary_key=True)
     course_code = Column(String(45, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-    name = Column(String(255, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    name = Column(String(255, 'utf8mb4_unicode_ci'), nullable=False)
 
     lecturer_id = Column(INTEGER(11), ForeignKey('lecturer.id'), nullable=False)
     lecturer = relationship("Lecturer", backref=backref("lecturer_courses"))
     students = relationship("Student", secondary=t_course_student, backref=backref("student_courses"))
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        for property, value in kwargs.items():
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('course_code', 'name'):
+                setattr(self, property, value)
+
+class CourseSchema(ma.ModelSchema):
+    lecturer = ma.Nested(LecturerSchema, only=['full_name'])
+
+    class Meta:
+        model = Course
+        fields = ('id', 'course_code', 'name', 'lecturer')
+
+t_survey_student = Table('survey_student', Base.metadata,
+    Column('survey_id', INTEGER, ForeignKey('survey.id')),
+    Column('student_id', INTEGER, ForeignKey('student.id'))
+)
+
+class Survey(Base):
+
+    __tablename__ = 'survey'
+
+    id = Column(INTEGER(11), primary_key=True)
+    title = Column(String(255, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    modified_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    course_id = Column(INTEGER(11), ForeignKey('course.id'), nullable=False)
+
+    course = relationship("Course", backref=backref("course_surveys"))
+    students = relationship("Student", secondary=t_survey_student, backref=backref("student_surveys"))
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        for property, value in kwargs.items():
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('title'):
+                setattr(self, property, value)
+
+class SurveySchema(ma.ModelSchema):
+    course = ma.Nested(CourseSchema, only=['course_code', 'name', 'lecturer'])
+
+    class Meta:
+        model = Course
+        fields = ('id', 'course', 'title', 'created_at', 'modified_at')
 
 metadata.create_all(engine)

@@ -20,3 +20,12 @@ class AddLecturer(FlaskForm):
     username = TextField('Tài khoản')
     full_name = TextField('Họ và tên')
     vnu_email = TextField('VNU email')
+
+class EditCourse(FlaskForm):
+    id = HiddenField()
+    course_code = TextField('Mã môn học')
+    name = TextField('Tên môn học')
+
+class EditSurvey(FlaskForm):
+    id = HiddenField()
+    title = TextField('Tiêu đề')

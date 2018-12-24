@@ -7,7 +7,11 @@ fields: false
 users: false
 */
 
-const table = $('#table').DataTable(); // eslint-disable-line new-cap
+const table = $('#table').DataTable({
+    language: {
+        url: '/static/build/language/Vietnamese.json'
+    }
+}); // eslint-disable-line new-cap
 
 /**
  * Add user to datatable or edit line.
@@ -76,6 +80,7 @@ function deleteUser(id) { // eslint-disable-line no-unused-vars
         $('#cf_class_course').text('Khóa đào tạo: ' + class_course)
     })
     $('#delete_confirm').modal('show');
+    $('#doDelete').unbind("click");
     $('#doDelete').click(function () {
         doDelete(id);
     })

@@ -9,7 +9,7 @@ from flask_login import (
 
 from app.base import blueprint
 from app.base.forms import LoginForm
-from app.base.models import User, Student, Role, Course, Lecturer
+from app.base.models import User, Role, Survey, Course
 from app.base.models import db_session
 
 
@@ -38,14 +38,14 @@ def route_default():
         db_session.commit()
 
     # for test
-    if not Course.query.filter_by(course_code='INT3306 1').first():
-        course = Course(course_code='INT3306 1', name='Phát triển ứng dụng Web')
+    if not Survey.query.first():
+        course = Course.query.filter_by(course_code='INT3306 1').first()
+        survey = Survey(title="Phát triển ứng dụng Web INT3306 1")
+        survey.course = course
+        for student in course.students:
+            survey.students.append(student)
 
-        lecturer = Lecturer.query.filter_by(username='thanhld').first()
-        course.lecturer = lecturer
-        course.students.append(Student.query.first())
-
-        db_session.add(course)
+        db_session.add(survey)
         db_session.commit()
 
     return redirect(url_for('base_blueprint.login'))

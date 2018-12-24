@@ -1,0 +1,18 @@
+{% extends 'student_management.html' %}
+
+{% block title %} Quản lý sinh viên lớp học{% endblock title %}
+
+{% block content %}
+    {% include 'alert.html' %}
+    {% include 'student_delete_confirm.html' %}
+    {% include 'student_modals.html' %}
+    {% include 'course_student_table.html' %}
+{% endblock content %}
+
+{% block js_management %}
+    <script>
+    var course = JSON.parse({{ course|tojson|safe }})
+    var course_id = course.id
+    </script>
+    <script src="{{ url_for('course_blueprint.static', filename='courseStudentManagement.js') }}"></script>
+{% endblock %}

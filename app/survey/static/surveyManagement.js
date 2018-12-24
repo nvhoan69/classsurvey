@@ -22,7 +22,7 @@ function addUser(mode, properties) {
 
   let values = [];
   for (let i = 0; i < fields.length; i++) {
-    values.push(`${properties[fields[i]]}`);
+      values.push(`${properties[fields[i]]}`);
   }
   values.push(
     `<button type="button" class="btn btn-info btn-xs"
@@ -44,14 +44,8 @@ function addUser(mode, properties) {
   }
 })();
 
-/**
- * Display user modal for creation.
- */
-function showModal() { // eslint-disable-line no-unused-vars
-  $('#edit-form').trigger('reset');
-  $('#id').val('')
-  $('#title').text('Thêm mới giảng viên');
-  $('#edit').modal('show');
+function  courseIndex() {
+    window.location.href=`/survey/course/index`;
 }
 
 /**
@@ -59,23 +53,25 @@ function showModal() { // eslint-disable-line no-unused-vars
  * @param {userId} userId - Id of the user to be deleted.
  */
 function showUserModal(id) { // eslint-disable-line no-unused-vars
-  call(`/lecturer_mn/get/${id}`, function(properties) {
+  call(`/course/get/${id}`, function(properties) {
     for (const [property, value] of Object.entries(properties)) {
       $(`#${property}`).val(value);
     }
-    $('#title').text(`Chỉnh sửa giảng viên ${properties.full_name}`);
+    $('#title').text(`Chỉnh sửa lớp môn học ${properties.name}`);
     $('#edit').modal('show');
   });
 }
 
 function deleteUser(id) { // eslint-disable-line no-unused-vars
-    call(`/lecturer_mn/get/${id}`, function (properties) {
-        var full_name = properties.full_name
-        var vnu_email = properties.vnu_email
-        var username = properties.username
-        $('#cf_full_name').text('Họ tên: ' + full_name)
-        $('#cf_username').text('Tên tài khoản: ' + username)
-        $('#cf_vnu_email').text('VNU email: ' + vnu_email)
+    call(`/survey/get/${id}`, function (properties) {
+        var title = properties.title
+        var course_code = properties.course.course_code
+        var course_name = properties.course.name
+        var lecturer = properties.course.lecturer.full_name
+        $('#cf_title').text('Tiêu đề: ' + title)
+        $('#cf_course_code').text('Mã môn học: ' + course_code)
+        $('#cf_course_name').text('Tên môn học: ' + course_name)
+        $('#cf_lecturer').text('Giảng viên: ' + lecturer)
     })
     $('#delete_confirm').modal('show');
     $('#doDelete').unbind("click");
@@ -85,7 +81,7 @@ function deleteUser(id) { // eslint-disable-line no-unused-vars
 }
 
 function doDelete(id) {
-    call(`/lecturer_mn/delete/${id}`, function (success) {
+    call(`/survey/delete/${id}`, function (success) {
         if(success=='Success') {
             $('#alert_message').text('Xóa thành công!')
             $('#alert').modal('show');
@@ -98,11 +94,11 @@ function doDelete(id) {
 * Create or edit lecturer.
 */
 function processData() { // eslint-disable-line no-unused-vars
-  fCall('/lecturer_mn/process', '#edit-form', function(lecturer) {
+  fCall('/course/process', '#edit-form', function(properties) {
     const title = $('#title').text().startsWith('Ch');
     const mode = title ? 'edit' : 'create';
-    addUser(mode, lecturer);
-    const message = `${mode == 'edit' ? 'Đã sửa' : 'Đã tạo'} giảng viên ${lecturer.full_name}. Tên tài khoản: ${lecturer.username}`;
+    addUser(mode, properties);
+    const message = `${mode == 'edit' ? 'Đã sửa' : 'Đã tạo'} lớp môn học ${properties.name}. Mã môn học: ${properties.course_code}`;
     $('#alert_message').text(message);
     $('#alert').modal('show');
     $('#edit').modal('hide');

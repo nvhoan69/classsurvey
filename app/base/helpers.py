@@ -1,7 +1,6 @@
 from functools import wraps
 from flask import url_for, redirect, session, render_template
-# from app.base.models import User, ACCESS, Student, Lecturer
-from app.base.models import User, Student, Role, Lecturer, db_session
+from app.base.models import User, Student, Role, Lecturer, Course, db_session
 
 def requires_access_level(access_level):
     def decorator(f):
@@ -85,4 +84,15 @@ def lecturer_factory(**kwargs):
     db_session.commit()
     return lecturer
 
+def course_factory(**kwargs):
+    value = ''
+    if 'id' in kwargs.keys():
+        value = kwargs['id']
+
+    if value:
+        course = Course.query.filter_by(id=value).first()
+        if course:
+            course.update(**kwargs)
+    db_session.commit()
+    return course
 
