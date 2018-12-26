@@ -14,7 +14,7 @@ fields_render = ['Tiêu đề', 'Tạo lúc', 'Lần sửa cuối']
 @blueprint.route('/index')
 @login_required
 @requires_access_level('student')
-def student_survey_index():
+def index():
     user_id = session.get('user_id')
     user = User.query.filter_by(id=user_id).first()
     student = user.user_student[0]

@@ -116,11 +116,11 @@ def login():
 
             if user.allowed('student'):
                 session['level_access'] = 'student'
-                return redirect(url_for('student_blueprint.student_survey_index'))
+                return redirect(url_for('student_blueprint.index'))
 
             if user.allowed('lecturer'):
                 session['level_access'] = 'lecturer'
-                return redirect(url_for('lecturer_blueprint.student_survey_index'))
+                return redirect(url_for('lecturer_blueprint.lecturer_survey_index'))
 
         return render_template('errors/page_403.html')
 
