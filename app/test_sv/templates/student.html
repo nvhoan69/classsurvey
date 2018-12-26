@@ -1,0 +1,11 @@
+{% extends "base_site.html" %}
+
+{% block title %} Student {% endblock title %}
+{% block body %}
+
+    <script>
+    var json = {{ danhmucs|tojson|safe }}
+    alert(json)
+    </script>
+
+{% endblock body %}

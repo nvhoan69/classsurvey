@@ -15,8 +15,8 @@ def register_extensions(app):
     ma.init_app(app)
 
 def register_blueprints(app):
-    for module_name in ('base', 'admin', 'student_mn', 'survey',
-                        'lecturer_mn', 'lecturer', 'student', 'course'):
+    for module_name in ('base', 'admin', 'student_mn', 'survey', 'version',
+                        'lecturer_mn', 'test_gv', 'test_sv', 'course'):
         module = import_module('app.{}.routes'.format(module_name))
         app.register_blueprint(module.blueprint)
 

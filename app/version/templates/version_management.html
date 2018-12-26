@@ -1,0 +1,34 @@
+{% extends "admin_base_site.html" %}
+
+{% block title %} Quản lý phiếu khảo sát {% endblock title %}
+
+{% block stylesheets %}
+    {{ super() }}
+{% endblock stylesheets %}
+
+{% block content %}
+    {% include 'alert.html' %}
+    {% include 'version_delete_confirm.html' %}
+    {% include 'version_set_default_confirm.html' %}
+    {% include 'version_modals.html' %}
+    {% include 'version_table.html' %}
+{% endblock content %}
+
+{% block javascripts %}
+    {{ super() }}
+
+    <script src= {{ url_for('static', filename='vendors/parsleyjs/parsley.min.js') }}></script>
+    <script src="/static/enms/commonFunctions.js"></script>
+
+    <script>
+
+        var fields ={{ fields|tojson|safe }}
+        var fields_render ={{ fields_render|tojson|safe }}
+        var users = JSON.parse({{ propertis|tojson|safe }})
+
+    </script>
+    {% block js_management %}
+    <script src="{{ url_for('version_blueprint.static', filename='versionManagement.js') }}"></script>
+    {% endblock %}
+
+{% endblock javascripts %}

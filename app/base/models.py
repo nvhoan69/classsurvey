@@ -2,7 +2,7 @@ from bcrypt import gensalt, hashpw
 from flask_login import UserMixin
 from marshmallow import fields
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, LargeBinary, String, TIMESTAMP, Table, Text, text, \
+from sqlalchemy import Column, Boolean, DateTime, Float, ForeignKey, Index, LargeBinary, String, TIMESTAMP, Table, Text, text, \
     create_engine
 from sqlalchemy.dialects.mysql import INTEGER, LONGTEXT, MEDIUMTEXT, TINYINT
 from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
@@ -187,7 +187,7 @@ class Survey(Base):
     __tablename__ = 'survey'
 
     id = Column(INTEGER(11), primary_key=True)
-    title = Column(String(255, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    survey_title = Column(String(255, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     modified_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -207,7 +207,7 @@ class Survey(Base):
             if hasattr(value, '__iter__') and not isinstance(value, str):
                 # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
                 value = value[0]
-            if property in ('title'):
+            if property in ('survey_title'):
                 setattr(self, property, value)
 
 class SurveySchema(ma.ModelSchema):
@@ -215,6 +215,165 @@ class SurveySchema(ma.ModelSchema):
 
     class Meta:
         model = Course
-        fields = ('id', 'course', 'title', 'created_at', 'modified_at')
+        fields = ('id', 'course', 'survey_title', 'created_at', 'modified_at')
+
+class Version(Base):
+
+    __tablename__ = 'version'
+
+    id = Column(INTEGER(11), primary_key=True)
+    name = Column(String(255, 'utf8mb4_unicode_ci'), unique=True, nullable=False)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    modified_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_default = Column(Boolean, nullable=False)
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        for property, value in kwargs.items():
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('name', 'is_default'):
+                setattr(self, property, value)
+
+class VersionSchema(ma.ModelSchema):
+    class Meta:
+        model = Version
+        fields = ('id', 'created_at', 'modified_at', 'name', 'is_default')
+
+
+class Tieuchi(Base):
+    __tablename__ = 'tieuchi'
+
+    id = Column(INTEGER(11), primary_key=True)
+    stt = Column(INTEGER(11), nullable=False)
+    content = Column(String(255, 'utf8mb4_unicode_ci'), nullable=False)
+
+    danhmuc_id = Column(INTEGER(11), ForeignKey('danhmuc.id'), nullable=False)
+    danhmuc = relationship("Danhmuc", backref=backref("tieuchis"))
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        for property, value in kwargs.items():
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('stt', 'content'):
+                setattr(self, property, value)
+
+class Danhmuc(Base):
+    __tablename__ = 'danhmuc'
+
+    id = Column(INTEGER(11), primary_key=True)
+    stt = Column(INTEGER(11), nullable=False)
+    content = Column(String(255, 'utf8mb4_unicode_ci'), nullable=False)
+
+    version_id = Column(INTEGER(11), ForeignKey('version.id'), nullable=False)
+    version = relationship("Version", backref=backref("danhmucs"))
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        for property, value in kwargs.items():
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('stt', 'content'):
+                setattr(self, property, value)
+
+class TieuchiSchema(ma.ModelSchema):
+    class Meta:
+        model = Tieuchi
+        fields = ('stt', 'content')
+
+class DanhmucSchema(ma.ModelSchema):
+    tieuchis = ma.Nested(TieuchiSchema, many=True)
+
+    class Meta:
+        model = Danhmuc
+        fields = ('stt', 'content', 'tieuchis')
+
+class Points(Base):
+    __tablename__ = 'points'
+
+    id = Column(INTEGER(11), primary_key=True)
+    tieuchi_id = Column(INTEGER(11), nullable=False)
+    survey_id = Column(INTEGER(11), nullable=False)
+    student_id = Column(INTEGER(11), nullable=False)
+    points = Column(INTEGER(3), nullable=False)
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        for property, value in kwargs.items():
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('points'):
+                setattr(self, property, value)
+
+class Result(Base):
+    __tablename__ = 'result'
+
+    id = Column(INTEGER(11), primary_key=True)
+    tieuchi_id = Column(INTEGER(11), nullable=False)
+    survey_id = Column(INTEGER(11), nullable=False)
+    tb = Column(Float, nullable=False)
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        for property, value in kwargs.items():
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('tb'):
+                setattr(self, property, value)
+
+class Commit(Base):
+    __tablename__ = 'commit'
+
+    id = Column(INTEGER(11), primary_key=True)
+    student_id = Column(INTEGER(11), nullable=False)
+    version_id = Column(INTEGER(11), nullable=False)
+    survey_id = Column(INTEGER(11), nullable=False)
+    is_commited = Column(Boolean, nullable=False)
+
+    def __init__(self, **kwargs):
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        for property, value in kwargs.items():
+            # depending on whether value is an iterable or not, we must
+            # unpack it's value (when **kwargs is request.form, some values
+            # will be a 1-element list)
+            if hasattr(value, '__iter__') and not isinstance(value, str):
+                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                value = value[0]
+            if property in ('is_commited'):
+                setattr(self, property, value)
 
 metadata.create_all(engine)

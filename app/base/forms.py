@@ -28,4 +28,8 @@ class EditCourse(FlaskForm):
 
 class EditSurvey(FlaskForm):
     id = HiddenField()
-    title = TextField('Tiêu đề')
+    survey_title = TextField('Tiêu đề')
+
+class EditVersion(FlaskForm):
+    id = HiddenField()
+    name = TextField('Tên mẫu')

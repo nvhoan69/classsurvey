@@ -53,18 +53,29 @@ function  courseIndex() {
  * @param {userId} userId - Id of the user to be deleted.
  */
 function showUserModal(id) { // eslint-disable-line no-unused-vars
-  call(`/course/get/${id}`, function(properties) {
+  call(`/survey/get/${id}`, function(properties) {
+    var course_code = properties.course.course_code
+    var course_name = properties.course.name
+    var lecturer = properties.course.lecturer.full_name
+    $('#info_course_code').text('Mã môn học: ' + course_code)
+    $('#info_course_name').text('Tên môn học: ' + course_name)
+    $('#info_lecturer').text('Giảng viên: ' + lecturer)
+
     for (const [property, value] of Object.entries(properties)) {
-      $(`#${property}`).val(value);
+      if(property == 'title') {
+          $('#survey_title').val(value);
+      }
+      else
+          $(`#${property}`).val(value);
     }
-    $('#title').text(`Chỉnh sửa lớp môn học ${properties.name}`);
+    $('#title').text(`Chỉnh sửa cuộc khảo sát`);
     $('#edit').modal('show');
   });
 }
 
 function deleteUser(id) { // eslint-disable-line no-unused-vars
     call(`/survey/get/${id}`, function (properties) {
-        var title = properties.title
+        var title = properties.survey_title
         var course_code = properties.course.course_code
         var course_name = properties.course.name
         var lecturer = properties.course.lecturer.full_name
@@ -91,14 +102,14 @@ function doDelete(id) {
     $('#delete_confirm').modal('hide');
 }
 /**
-* Create or edit lecturer.
+* Edit
 */
 function processData() { // eslint-disable-line no-unused-vars
-  fCall('/course/process', '#edit-form', function(properties) {
+  fCall('/survey/process', '#edit-form', function(properties) {
     const title = $('#title').text().startsWith('Ch');
     const mode = title ? 'edit' : 'create';
     addUser(mode, properties);
-    const message = `${mode == 'edit' ? 'Đã sửa' : 'Đã tạo'} lớp môn học ${properties.name}. Mã môn học: ${properties.course_code}`;
+    const message = `${mode == 'edit' ? 'Đã sửa' : 'Đã tạo'} cuộc khảo sát ${properties.survey_title}`;
     $('#alert_message').text(message);
     $('#alert').modal('show');
     $('#edit').modal('hide');
