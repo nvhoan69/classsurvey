@@ -60,6 +60,7 @@ def student_get(id):
 @login_required
 @requires_access_level('admin')
 def student_process():
+
     student_data = request.form.to_dict()
     student = student_factory(**student_data)
     student_schema = StudentSchema()

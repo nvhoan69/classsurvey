@@ -139,13 +139,15 @@ def course_student_index(id):
 @login_required
 @requires_access_level('admin')
 def course_student_process(id):
-    a = id
     student_data = request.form.to_dict()
     student = student_factory(**student_data)
     course = Course.query.filter_by(id=id).first()
     if not course: return "The course which has that id doesn't exist!"
     if student not in course.students:
         course.students.append(student)
+        survey = course.course_surveys[0]
+        if survey not in student.student_surveys:
+            student.student_surveys.append(survey)
         db_session.commit()
 
     student_schema = StudentSchema()
@@ -163,6 +165,9 @@ def course_student_delete(course_id, student_id):
     course = Course.query.filter_by(id=course_id).first()
     if not course:
         return "The course which has the id doesn't exist!"
+
+    survey = course.course_surveys[0]
+    student.student_surveys.remove(survey)
     course.students.remove(student)
 
     db_session.commit()

@@ -328,7 +328,7 @@ class Points(Base):
             if hasattr(value, '__iter__') and not isinstance(value, str):
                 # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
                 value = value[0]
-            if property in ('points'):
+            if property in ('points', 'tieuchi_id', 'survey_id', 'student_id'):
                 setattr(self, property, value)
 
 class Result(Base):
@@ -350,7 +350,7 @@ class Result(Base):
             if hasattr(value, '__iter__') and not isinstance(value, str):
                 # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
                 value = value[0]
-            if property in ('tb'):
+            if property in ('tb', 'tieuchi_id', 'survey_id'):
                 setattr(self, property, value)
 
 class Commit(Base):
@@ -373,7 +373,7 @@ class Commit(Base):
             if hasattr(value, '__iter__') and not isinstance(value, str):
                 # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
                 value = value[0]
-            if property in ('is_commited'):
+            if property in ('is_commited', 'student_id', 'version_id', 'survey_id'):
                 setattr(self, property, value)
 
 metadata.create_all(engine)
