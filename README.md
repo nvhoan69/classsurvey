@@ -3,12 +3,12 @@
 ### Danh sách nhóm
 | Sinh viên | MSSV |
 | ------ | ------ |
-| Nguyễn Văn Hoàn |  |
+| Nguyễn Văn Hoàn | 16020971 |
 | Nguyễn Minh Châu | 15021766 |
 | Nguyễn Trọng Đạt |  |
 
 ### Cài đặt các yêu cầu (requirements)
-Chúng ta cần dùng pip để cài đặt một số các yêu cầu
+Chúng ta cần dùng pip để cài đặt một số các gói cần thiết
 
 ```sh
 $ pip install -r requirements.txt
