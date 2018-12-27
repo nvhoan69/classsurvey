@@ -14,8 +14,10 @@
       <title>Class Survey! | {% block title %}{% endblock %}</title>
 
       {% block stylesheets %}
+        {% block bootstrap %}
         <!-- Bootstrap -->
         <link href="{{ url_for('static', filename='vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+        {% endblock bootstrap %}
         <!-- Font Awesome -->
         <link href="{{ url_for('static', filename='vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
         <!-- NProgress -->

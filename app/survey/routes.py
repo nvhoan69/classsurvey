@@ -1,14 +1,11 @@
 import json
-import pandas as pd
 from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import login_required
 
 from app.survey import blueprint
-from app.base.helpers import requires_access_level, student_factory, course_factory, survey_factory
-from app.base.models import Survey, SurveySchema, db_session, Lecturer, StudentSchema, Student, Course, CourseSchema
-from app.base.forms import EditSurvey, AddStudent
-
-from app.survey.helpers import excel_list_to_dict, retrieve_info
+from app.base.helpers import requires_access_level, survey_factory
+from app.base.models import Survey, SurveySchema, db_session, Course, CourseSchema
+from app.base.forms import EditSurvey
 
 fields = ['survey_title', 'created_at', 'modified_at']
 fields_render = ['Tiêu đề', 'Tạo lúc', 'Lần sửa cuối']
@@ -17,12 +14,11 @@ fields_render = ['Tiêu đề', 'Tạo lúc', 'Lần sửa cuối']
 @login_required
 @requires_access_level('admin')
 def survey_index():
-    surveys = Survey.query.all()
+    surveys = Survey.query.all() # query tất cả các cuộc khảo sát
+
     schema = SurveySchema(many=True)
     output = schema.dump(surveys).data
-
-    # print(output)
-    survey_json = json.dumps(output)
+    survey_json = json.dumps(output) # chuyển dứ liệu về json để trả về
     return render_template(
         '/survey_management.html',
         fields=fields,

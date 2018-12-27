@@ -1,0 +1,31 @@
+{% extends "admin_base_site.html" %}
+
+{% block title %} Xem kết quả đánh giá môn học {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+{% endblock stylesheets %}
+
+{% block content %}
+  {% include 'alert.html' %}
+  {% include 'lecturer_survey_table.html' %}
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ super() }}
+
+    <script src = {{ url_for('static', filename='vendors/parsleyjs/parsley.min.js') }}></script>
+    <script src="/static/enms/commonFunctions.js"></script>
+
+    <script>
+        var fields = {{ fields|tojson|safe }}
+        var fields_render = {{ fields_render|tojson|safe }}
+        var users = JSON.parse({{ propertis|tojson|safe }})
+    </script>
+    <script src="{{ url_for('lecturer_blueprint.static', filename='lecturerSurveyManagement.js') }}"></script>
+
+    <script>
+    </script>
+
+{% endblock javascripts %}

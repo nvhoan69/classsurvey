@@ -4,8 +4,8 @@
 {% block body %}
 
     <script>
-    var json = {{ danhmucs|tojson|safe }}
-    alert(json)
+    var json = JSON.parse({{ danhmucs|tojson|safe }})
+    alert(json[0].tieuchis[0].content)
     </script>
 
 {% endblock body %}

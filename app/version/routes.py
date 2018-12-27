@@ -61,7 +61,19 @@ def delete_version(id):
     if not version:
         return render_template('errors/page_404.html')
 
-    is_default = version.is_default
+    is_default = version.is_default #check xem version bị xóa có phải là mặc định?
+
+
+    # để xóa 1 version cần xóa các tiêu chí, danh mục của nó trước
+    for dm in version.danhmucs:
+        for tc in dm.tieuchis:
+            db_session.delete(tc)
+        db_session.commit()
+        # xóa hết tiêu chí của danh mục rồi mới xóa danh mục
+        db_session.delete(dm)
+
+    db_session.commit()
+
     db_session.delete(version)
     db_session.commit()
 

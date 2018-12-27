@@ -337,7 +337,12 @@ class Result(Base):
     id = Column(INTEGER(11), primary_key=True)
     tieuchi_id = Column(INTEGER(11), nullable=False)
     survey_id = Column(INTEGER(11), nullable=False)
-    tb = Column(Float, nullable=False)
+    m = Column(Float, nullable=False)
+    std = Column(Float, nullable=False)
+    m1 = Column(Float, nullable=False)
+    std1 = Column(Float, nullable=False)
+    m2 = Column(Float, nullable=False)
+    std2 = Column(Float, nullable=False)
 
     def __init__(self, **kwargs):
         self.update(**kwargs)
@@ -350,7 +355,7 @@ class Result(Base):
             if hasattr(value, '__iter__') and not isinstance(value, str):
                 # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
                 value = value[0]
-            if property in ('tb', 'tieuchi_id', 'survey_id'):
+            if property in ('m1', 'std1', 'tieuchi_id', 'survey_id', 'm', 'std', 'm2', 'std2'):
                 setattr(self, property, value)
 
 class Commit(Base):

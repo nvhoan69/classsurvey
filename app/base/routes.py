@@ -14,6 +14,36 @@ from app.base.models import db_session
 
 from app.base.helpers import version_factory
 
+d = [
+    'Cơ sở vật chất',
+    'Môn học',
+    'Hoạt động giảng dạy'
+]
+
+t = [
+    'Giảng đường đáp ứng nhu cầu môn học',
+    'Các trang thiết bị đáp ứng yêu cầu giảng dạy và học tập',
+    'Bạn được hỗ trợ kịp thời trong quá trình học môn này',
+    'Mục tiêu môn học nêu rõ kiến thức và kĩ năng của người học cần đạt',
+    'Thời lượng môn học được phân bổ hợp lí cho các hình thức học tập',
+
+    'Các tài liệu môn học được cập nhật',
+    'Môn học góp phần trang bị kiến thức và kĩ năng nghề nghiệp cho bạn',
+    'Giảng viên thực hiện đầy đủ nội dung và thời lượng của môn học theo kế hoạch',
+    'Giảng viên hướng dẫn bạn phương pháp học tập khi bắt đầu bộ môn',
+    'Phương pháp giảng dạy của giảng viên giúp bạn phát triển tư duy',
+
+    'Giảng viên tạo cơ hội để bạn chủ động tham gia vào quá trình học tập',
+    'Giảng viên giúp bạn phát triển kĩ năng làm việc độc lập',
+    'Giảng viên giúp bạn rèn luyện phương pháp giữa các vấn đề liên hệ trong môn học thực tiễn',
+    'Giảng viên sử dụng hiệu quả phương tiện dạy học',
+    'Giảng viên quan tâm giáo dục tư cách, phẩm chất nghề nghiệp của người học',
+
+    'Bạn hiểu được những vấn đề truyền tải trên lớp',
+    'Kết quả học tập của người học được đánh giá bằng nhiều hình thức phù hợp với tính chất và đặc thù môn học',
+    'Nội dung kiểm tra đánh giá tổng hợp được các kĩ năng mà người học phải đạt yêu cầu',
+    'Thông tin phản hồi tử kiểm tra đánh giá giúp bạn cải thiện kết quả học tập',
+]
 
 @blueprint.route('/')
 def route_default():
@@ -56,38 +86,71 @@ def route_default():
         db_session.commit()
 
     version = Version.query.filter_by(name='Version 1').first()
-    if not Danhmuc.query.filter_by(version_id=version.id, content='Danh muc 1 v1').first():
-        danhmuc = Danhmuc(stt=1, content='Danh muc 1 v1')
+    if not Danhmuc.query.filter_by(version_id=version.id, content=d[0]).first():
+        danhmuc = Danhmuc(stt=1, content=d[0])
         danhmuc.version = version
         db_session.add(danhmuc)
 
-        tieuchi1 = Tieuchi(stt=1, content='Tieu chi 1 v1')
+        tieuchi1 = Tieuchi(stt=1, content=t[0])
         tieuchi1.danhmuc = danhmuc
-        tieuchi2 = Tieuchi(stt=2, content='Tieu chi 2 v1')
+        tieuchi2 = Tieuchi(stt=2, content=t[1])
         tieuchi2.danhmuc = danhmuc
-        tieuchi3 = Tieuchi(stt=3, content='Tieu chi 3 v1')
-        tieuchi3.danhmuc = danhmuc
 
         db_session.add(tieuchi1)
         db_session.add(tieuchi2)
-        db_session.add(tieuchi3)
         db_session.commit()
 
-    if not Danhmuc.query.filter_by(version_id=version.id, content='Danh muc 2 v1').first():
-        danhmuc = Danhmuc(stt=2, content='Danh muc 2 v1')
+    if not Danhmuc.query.filter_by(version_id=version.id, content=d[1]).first():
+        danhmuc = Danhmuc(stt=2, content=d[1])
         danhmuc.version = version
         db_session.add(danhmuc)
 
-        tieuchi4 = Tieuchi(stt=4, content='Tieu chi 4 v1')
-        tieuchi4.danhmuc = danhmuc
-        tieuchi5 = Tieuchi(stt=5, content='Tieu chi 5 v1')
-        tieuchi5.danhmuc = danhmuc
+        for i in range(3, 8):
+            tieuchi = Tieuchi(stt=i, content=t[i-1])
+            tieuchi.danhmuc = danhmuc
+            db_session.add(tieuchi)
+        db_session.commit()
 
-        db_session.add(tieuchi4)
-        db_session.add(tieuchi5)
+    if not Danhmuc.query.filter_by(version_id=version.id, content=d[2]).first():
+        danhmuc = Danhmuc(stt=3, content=d[2])
+        danhmuc.version = version
+        db_session.add(danhmuc)
 
+        for i in range(8, 20):
+            tieuchi = Tieuchi(stt=i, content=t[i-1])
+            tieuchi.danhmuc = danhmuc
+            db_session.add(tieuchi)
+        db_session.commit()
 
         db_session.commit()
+
+    version = Version.query.filter_by(name='Version 2').first()
+    if not Danhmuc.query.filter_by(version_id=version.id, content=d[1]).first():
+        danhmuc = Danhmuc(stt=1, content=d[1])
+        danhmuc.version = version
+        db_session.add(danhmuc)
+
+        for i in range(3, 8):
+            tieuchi = Tieuchi(stt=i - 2, content=t[i-1])
+            tieuchi.danhmuc = danhmuc
+            db_session.add(tieuchi)
+        db_session.commit()
+
+    version = Version.query.filter_by(name='Version 3').first()
+    if not Danhmuc.query.filter_by(version_id=version.id, content=d[2]).first():
+        danhmuc = Danhmuc(stt=1, content=d[2])
+        danhmuc.version = version
+        db_session.add(danhmuc)
+
+        for i in range(8, 20):
+            tieuchi = Tieuchi(stt=i - 7, content=t[i-1])
+            tieuchi.danhmuc = danhmuc
+            db_session.add(tieuchi)
+        db_session.commit()
+
+        db_session.commit()
+
+
 
     return redirect(url_for('base_blueprint.login'))
 
@@ -120,7 +183,7 @@ def login():
 
             if user.allowed('lecturer'):
                 session['level_access'] = 'lecturer'
-                return redirect(url_for('lecturer_blueprint.lecturer_survey_index'))
+                return redirect(url_for('lecturer_blueprint.index'))
 
         return render_template('errors/page_403.html')
 
